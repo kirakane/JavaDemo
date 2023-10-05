@@ -1,12 +1,14 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.service.SimpleService;
 import im.aop.loggers.Level;
 import im.aop.loggers.advice.around.LogAround;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,5 +33,15 @@ public class SimpleController {
     public String greet(@PathVariable String greeting){
         String ret = service.greet( greeting +" "+System.currentTimeMillis());
         return ret;
+    }
+
+    @RequestMapping(value = "/responseBody", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<String> responseBody(@RequestParam String value){
+        if (value.equals("foo")){
+            return ResponseEntity.ok("you sent foo");
+        } else {
+            throw new BadRequestException("You did not send foo");
+        }
     }
 }
